@@ -1,0 +1,47 @@
+{
+  "name": "print.server",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder --win --x64",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "print.server",
+    "mac": {
+      "category": "print-server-category.developer-tools",
+      "icon": "./build/icon.icns",
+      "hardenedRuntime": true,
+      "entitlements": "./build/entitlements.mac.plist",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "@ngrok/ngrok": "^1.4.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-fileupload": "^1.5.1"
+  }
+}
