@@ -2,7 +2,7 @@ import net from "net";
 
 const Controller = {
   getAllNetworkPrinters: async (request) => {
-    const networkPrefix = "192.168.1";
+    const networkPrefix = "10.10.80";
 
     try {
       const printers = await scanForPrinters(networkPrefix);
@@ -17,14 +17,22 @@ const Controller = {
     try {
       return await new Promise((resolve, reject) => {
         const client = new net.Socket();
+        client.setTimeout(1000);
 
         client.connect(port, ipAddress, () => {
           console.log(`Connected to printer at ${ipAddress}:${port}`);
+
           client.write(zpl, () => {
             console.log("ZPL data sent to printer");
             client.end();
             resolve({ message: "Success!", status: 200 });
           });
+        });
+
+        client.on("timeout", () => {
+          console.log("Connection timed out");
+          client.destroy(new Error("Connection timeout after 2 seconds"));
+          reject(new Error("Connection timeout after 2 seconds"));
         });
 
         client.on("error", (err) => {

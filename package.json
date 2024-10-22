@@ -7,15 +7,17 @@
   "scripts": {
     "start": "electron .",
     "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder --win --x64",
+    "app:dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "print.server",
+    "afterSign": "./scripts/notarize.js",
     "mac": {
       "category": "print-server-category.developer-tools",
       "icon": "./build/icon.icns",
       "hardenedRuntime": true,
+      "gatekeeperAssess": false,
       "entitlements": "./build/entitlements.mac.plist",
       "target": [
         "dmg",
@@ -41,7 +43,10 @@
   "dependencies": {
     "@ngrok/ngrok": "^1.4.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "electron-notarize": "^1.2.2",
     "express": "^4.21.1",
-    "express-fileupload": "^1.5.1"
+    "express-fileupload": "^1.5.1",
+    "git-filter-repo": "^0.0.30"
   }
 }
