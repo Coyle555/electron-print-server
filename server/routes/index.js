@@ -12,7 +12,7 @@ const createZpl = (record) => {
 ^FO50,200^BY3^BCN,150,Y,N,N^FD${record.slip.loadId}-${record.slip.shipmentId}^FS
 
 ^FO50,380^A0N,40,40^FDTracking Number:^FS
-^FO400,380^A0N,40,40^${record.trackingNumber}^FS
+^FO400,380^A0N,40,40^FD${record.trackingNumber}^FS
 
 ^FO50,440^A0N,40,40^FDDock Date:^FS
 ^FO400,440^A0N,40,40^${new Date(
@@ -59,13 +59,17 @@ router.post("/sendPrintJob", async (req, res) => {
 
   const zpl = createZpl(printDetails[0]);
 
-  const sendZplToPrinter = await Controller.sendZplToPrinter(
-    zpl,
-    ipAddress,
-    port
-  );
-
-  return res.status(sendZplToPrinter.status).send(sendZplToPrinter.message);
+  try {
+    const sendZplToPrinter = await Controller.sendZplToPrinter(
+      zpl,
+      ipAddress,
+      port
+    );
+    return res.status(sendZplToPrinter.status).send(sendZplToPrinter.message);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error.message);
+  }
 });
 
 router.get("/printers", async (req, res) => {
