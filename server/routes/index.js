@@ -1,31 +1,6 @@
 import express from "express";
 const router = express.Router();
 
-const createRepairZpl = (record) => {
-  return `
-  ^XA
-  ^LH0,0
-^PW1254
-^LL609
-
-^FO30,100^A0N,40,40^FDI^FS
-^FO85,50^BY3^BCN,115,Y,N,N^FD${record?.itemId || ""}^FS
-
-^FO30,250^A0N,40,40^FDO^FS
-^FO85,215^BY3^BCN,115,Y,N,N^FD${record?.configId || ""}^FS
-
-^FO30,415^A0N,40,40^FDC^FS
-^FO85,380^BY3^BCN,115,Y,N,N^FD${record?.conditionFinished || ""}^FS
-
-^FO30,580^A0N,40,40^FDD^FS
-^FO85,545^BY3^BCN,115,Y,N,N^FD${record?.dispositionFinished || ""}^FS
-
-^FO30,750^A0N,40,40^FDS^FS
-^FO85,710^BY3^BCN,115,Y,N,N^FD${record?.repairSerialNumber || ""}^FS
-
-^XZ`;
-};
-
 const createZpl = (record) => {
   return `^XA
             ^PW812
@@ -83,13 +58,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/sendPrintJob", async (req, res) => {
-  const { ipAddress, port, printDetails, isRepair = false } = req.body;
-
-  const zpl = isRepair
-    ? createRepairZpl(printDetails[0])
-    : createZpl(printDetails[0]);
-
-  console.log(zpl);
+  const { ipAddress, port, printDetails, isRepair = false, zpl } = req.body;
 
   try {
     const sendZplToPrinter = await Controller.sendZplToPrinter(
