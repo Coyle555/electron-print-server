@@ -10,10 +10,12 @@ import ngrok from "@ngrok/ngrok";
 
 const startProxy = async () => {
   await ngrok.authtoken("2nTFYjOJypvny89UWxE0C8VC1S7_7PFhBtGqAvGwYNpM7jGYa");
+  // await ngrok.authtoken("2rdBIVIU0ENaqgM748NnXuYk0Vj_5h9a4DFt8z9SGZSKbi4bg");
   const listener = await ngrok.forward({
     addr: 3000,
     authtoken_from_env: true,
     domain: "feline-intent-polecat.ngrok-free.app",
+    // domain: "lioness-coherent-sawfly.ngrok-free.app",
   });
 
   console.log(`Ingress established at: ${listener.url()}`);
