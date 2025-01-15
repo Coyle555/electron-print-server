@@ -1,18 +1,27 @@
 {
   "name": "print.server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minimal Electron application",
   "main": "main.js",
   "type": "module",
   "scripts": {
     "start": "electron .",
     "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder",
+    "app:dist": "npx electron-builder build --win portable",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "appId": "print.server",
     "afterSign": "./scripts/notarize.js",
+    "win": {
+      "publisherName": "MDSi inc",
+      "publish": [
+        "github"
+      ],
+      "target": [
+        "portable"
+      ]
+    },
     "mac": {
       "category": "print-server-category.developer-tools",
       "icon": "./build/icon.icns",

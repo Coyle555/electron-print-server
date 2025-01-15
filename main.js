@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-import { app as electronApp, BrowserWindow, app } from "electron";
+import { app as electronApp, BrowserWindow } from "electron";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,8 +7,6 @@ import bodyParser from "body-parser";
 import fileUpload from "express-fileupload";
 import cors from "cors";
 import ngrok from "@ngrok/ngrok";
-
-let mainWindow = null;
 
 const startProxy = async () => {
   await ngrok.authtoken("2nTFYjOJypvny89UWxE0C8VC1S7_7PFhBtGqAvGwYNpM7jGYa");
@@ -32,15 +30,12 @@ const __dirname = path.dirname(__filename);
 
 const expressApp = express();
 
-expressApp.set("port", process.env.PORT || SERVER_CONFIG["port"]);
+expressApp.set("port", SERVER_CONFIG["port"]);
 expressApp.set(
   "welcome-text",
   SERVER_CONFIG["welcome-text"].replace("$port", SERVER_CONFIG["port"]) ||
     "Welcome to node server"
 );
-
-expressApp.set("views", path.join(__dirname, "views"));
-expressApp.set("view engine", "ejs");
 
 expressApp.use(
   fileUpload({
@@ -54,8 +49,6 @@ expressApp.use(bodyParser.urlencoded({ extended: true }));
 
 expressApp.use(router);
 
-expressApp.use(express.static(path.join(__dirname, "public")));
-
 expressApp.listen(expressApp.get("port"), "0.0.0.0", () => {
   console.log(expressApp.get("welcome-text"));
 });
@@ -63,35 +56,27 @@ expressApp.listen(expressApp.get("port"), "0.0.0.0", () => {
 startProxy();
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  mainWindow.on("closed", () => {
-    mainWindow = null; // Clear the reference
-    app.quit();
-  });
 
   mainWindow.loadFile("index.html");
 }
 
+electronApp.commandLine.appendSwitch("ignore-certificate-errors");
+
 electronApp.whenReady().then(() => {
   createWindow();
 
-  app.on("activate", () => {
-    // On macOS, it's common to re-open a window when the dock icon is clicked
-    // and there are no other open windows.
-    if (mainWindow === null) {
-      createWindow();
-    }
+  electronApp.on("activate", function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
 electronApp.on("window-all-closed", function () {
-  if (process.platform !== "darwin") {
-    // app.quit();
-  }
+  if (process.platform !== "darwin") electronApp.quit();
 });
